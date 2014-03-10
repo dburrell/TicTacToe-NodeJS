@@ -6,7 +6,8 @@
         
           var side = "";    //X or O later
           var boxes = new Array();
-        
+          var player = '[PLAYER];'
+                  
           var socketio = io.connect("192.168.0.202:1337");
           
           //On receive data
@@ -15,7 +16,7 @@
             try
             {
               var n = parseInt(data['message']);
-              boxes[n] = "X";                           
+              boxes[n] = data['player'];                           
             }
             catch(err)
             {}
@@ -29,7 +30,7 @@
           function sendMessage() 
           {
             var msg = document.getElementById("message_input").value;
-            socketio.emit("message_to_server", { message : msg});
+            socketio.emit("message_to_server", { message : msg, player: player});
           }
         
         

@@ -2,16 +2,28 @@ var http = require('http'),
     fs = require('fs'),
     sanitize = require('validator');
 
-var userCounter = 0; 
+var gameCounter = 0;
+var playerJoined = false;
 
 var app = http.createServer(function (request, response) 
-{
-  userCounter++;
+{  
+  
   fs.readFile("client.html", 'utf-8', function (error, data) 
   {
     response.writeHead(200, {'Content-Type': 'text/html'});
+  
+    if (playerJoined == false)
+    {
+      data = data.replace("[PLAYER]","X");
+    }
+    else
+    {
+      data = data.replace("[PLAYER]","O");
+    }
+               
     response.write(data);
     response.end();
+    playerJoined = true;
   });
 }).listen(1337);
 
@@ -27,7 +39,8 @@ io.sockets.on('connection',
     {
       counter++;
       var escaped_message = sanitize.escape(data["message"]);
-      io.sockets.emit("message_to_client",{ message: escaped_message});
+      var playerSubmitted = sanitize.escape(data["player"]);
+      io.sockets.emit("message_to_client",{ message: escaped_message, player: playerSubmitted});
     });
   }
 );
