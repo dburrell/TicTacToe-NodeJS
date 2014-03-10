@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+        
+          var side = "";    //X or O later
+          var boxes = new Array();
+        
+          var socketio = io.connect("192.168.0.202:1337");
+          
+          //On receive data
+          socketio.on("message_to_client", function(data) 
+          {
+            try
+            {
+              var n = parseInt(data['message']);
+              boxes[n] = "X";                           
+            }
+            catch(err)
+            {}
+                        
+            displayArray();            
+          });
+
+        
+        
+          //Send out data
+          function sendMessage() 
+          {
+            var msg = document.getElementById("message_input").value;
+            socketio.emit("message_to_server", { message : msg});
+          }
+        
+        
+          
+          //Display the array
+          function displayArray()
+          {
+            document.getElementById("chatlog").innerHTML = "";
+            for (var i = 0; i < 9; i++)
+            {
+              document.getElementById("chatlog").innerHTML = document.getElementById("chatlog").innerHTML
+                                                            + i + ":"
+                                                            + boxes[i]
+                                                            + "<br>";
+            }
+          }
+        </script>
+    </head>
+    <body>
+        <input type="text" id="message_input"/>
+        <button onclick="sendMessage()">send</button>
+        <div id="chatlog"></div>
+    </body>
+</html>
