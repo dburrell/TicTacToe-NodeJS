@@ -1,57 +1,98 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script src="socket.io/socket.io.js"></script>
-        <script type="text/javascript">
+  <style>
+    td
+    {
+      width:100px;
+      height:100px;
+      text-align:center;
+      background-color:yellow;
+      border: black 1px solid;
+    }
+  </style>
+  <head>
+      <script src="socket.io/socket.io.js"></script>
+      <script type="text/javascript">
+      
+        var side = "";    //X or O later
+        var boxes = new Array();
+        var player = '[PLAYER]';
+                
+        var socketio = io.connect("192.168.0.202:1337");
         
-          var side = "";    //X or O later
-          var boxes = new Array();
-          var player = '[PLAYER];'
-                  
-          var socketio = io.connect("192.168.0.202:1337");
-          
-          //On receive data
-          socketio.on("message_to_client", function(data) 
+        //On receive data
+        socketio.on("message_to_client", function(data) 
+        {
+          try
           {
-            try
+            var n = parseInt(data['message'].replace("box",""));
+            if (typeof boxes[n] === 'undefined')
             {
-              var n = parseInt(data['message']);
               boxes[n] = data['player'];                           
             }
-            catch(err)
-            {}
-                        
-            displayArray();            
-          });
+          }
+          catch(err)
+          {}
+                      
+          displayArray();            
+        });
+
+      
+      
+        //Send out data
+        function sendMessage(m) 
+        {          
+          socketio.emit("message_to_server", { message : m, player: player});
+        }
+        
 
         
-        
-          //Send out data
-          function sendMessage() 
+        //Display the array
+        function displayArray()
+        {          
+          for (var i = 0; i < 9; i++)
           {
-            var msg = document.getElementById("message_input").value;
-            socketio.emit("message_to_server", { message : msg, player: player});
-          }
-        
-        
-          
-          //Display the array
-          function displayArray()
-          {
-            document.getElementById("chatlog").innerHTML = "";
-            for (var i = 0; i < 9; i++)
+            if (typeof boxes[i] !== 'undefined')
             {
-              document.getElementById("chatlog").innerHTML = document.getElementById("chatlog").innerHTML
-                                                            + i + ":"
-                                                            + boxes[i]
-                                                            + "<br>";
+              document.getElementById("box" + i).innerHTML = boxes[i];                      
             }
           }
-        </script>
-    </head>
-    <body>
-        <input type="text" id="message_input"/>
-        <button onclick="sendMessage()">send</button>
-        <div id="chatlog"></div>
-    </body>
+        }
+        
+        
+        
+      </script>
+  </head>
+  <body>
+    <div id="playerID"></div>
+    <table>
+      <tr>
+        <td id="box0">-</td>
+        <td id="box1">-</td>
+        <td id="box2">-</td>
+      </tr>
+      <tr>
+        <td id="box3">-</td>
+        <td id="box4">-</td>
+        <td id="box5">-</td>
+      </tr>
+      <tr>
+        <td id="box6">-</td>
+        <td id="box7">-</td>
+        <td id="box8">-</td>
+      </tr>  
+    </table>    
+  <script>
+    //Add actions to boxes
+    for (var i = 0; i < 9; i++)
+    {      
+      document.getElementById("box" + i).onclick = function() { sendMessage(this.id); };
+    }
+    document.getElementById("playerID").innerHTML = "You are player " + player;
+    
+  </script>
+  
+  </body>
+  
+  
 </html>
