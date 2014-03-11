@@ -16,9 +16,14 @@
       
         var side = "";    //X or O later
         var boxes = new Array();
-        var player = '[PLAYER]';
-                
+        var player = '[PLAYER]';                
         var socketio = io.connect("192.168.0.202:1337");
+        
+        
+        socketio.on("player2joined", function(data) 
+        {
+          document.getElementById("waitingMsg").style.display="none";
+        });
         
         //On receive data
         socketio.on("message_to_client", function(data) 
@@ -61,6 +66,7 @@
   </head>
   <body>
     <div id="playerID"></div>
+    <div id="waitingMsg" style="display:[SHOW_WAITING];">Waiting for player 2...</div>
     <table>
       <tr>
         <td id="box0"></td>

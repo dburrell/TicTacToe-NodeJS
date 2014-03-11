@@ -15,18 +15,24 @@ var app = http.createServer(function (request, response)
       response.writeHead(200, {'Content-Type': 'text/html'});
                
       if (players == 0)
-      { data = data.replace("[PLAYER]","X"); }
+      { 
+        data = data.replace("[PLAYER]","X"); 
+        data = data.replace("[SHOW_WAITING]","solid"); 
+      }
       
       if (players == 1)
-      { data = data.replace("[PLAYER]","O"); }
+      { 
+        data = data.replace("[PLAYER]","O");
+        data = data.replace("[SHOW_WAITING]","none"); 
+        io.sockets.emit("player2joined",{});
+       }
                  
       if (players > 1)
       { data = "Sorry, there are already 2 players"; }
                  
       response.write(data);
       response.end();      
-      
-      players++;      
+      players++; 
     });  
   }
   else
@@ -45,9 +51,16 @@ io.sockets.on('connection',
   {
     socket.on('message_to_server', function(data) 
     {
-      var escaped_message = sanitize.escape(data["message"]);
-      var playerSubmitted = sanitize.escape(data["player"]);
-      io.sockets.emit("message_to_client",{ message: escaped_message, player: playerSubmitted});
+      if (players === 2)
+      {
+        var escaped_message = sanitize.escape(data["message"]);
+        var playerSubmitted = sanitize.escape(data["player"]);
+        io.sockets.emit("message_to_client",{ message: escaped_message, player: playerSubmitted, debug: false});
+      }
+      else
+      {
+      
+      }
     });
   }
 );
