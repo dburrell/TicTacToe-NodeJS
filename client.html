@@ -18,6 +18,7 @@
         var boxes = new Array();
         var player = '[PLAYER]';                
         var socketio = io.connect("192.168.0.202:1337");
+        var yourTurn = [YOURTURN];
         
         
         socketio.on("player2joined", function(data) 
@@ -26,7 +27,7 @@
         });
         
         //On receive data
-        socketio.on("message_to_client", function(data) 
+        socketio.on("play", function(data) 
         {
           try
           {
@@ -39,14 +40,15 @@
           catch(err)
           {}
                       
-          displayArray();            
+          displayArray();
+          yourTurn = toggle(yourTurn);            
         });
 
       
       
         //Send out data
-        function sendMessage(m) 
-        { socketio.emit("message_to_server", { message : m, player: player}); }
+        function sendMessage(cat, m) 
+        { socketio.emit(cat, { message : m, player: player}); }
         
 
         
@@ -60,6 +62,14 @@
           }
         }
         
+        //toggle a bool
+        function toggle(v)
+        {
+          if (v === true)
+          { return false; }
+          else
+          { return true; }
+        }
         
         
       </script>
@@ -88,7 +98,15 @@
     //Add actions to boxes
     for (var i = 0; i < 9; i++)
     {      
-      document.getElementById("box" + i).onclick = function() { sendMessage(this.id); };
+      document.getElementById("box" + i).onclick = function() 
+      {
+        if (yourTurn === true)
+        {
+          sendMessage("playReq",this.id); 
+        }
+        else
+        {}
+      };
     }
     document.getElementById("playerID").innerHTML = "You are player " + player;
     
