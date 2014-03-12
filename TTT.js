@@ -46,11 +46,12 @@ var app = http.createServer(function (request, response)
 }).listen(1337);
 
 
-
+//IO work
 var io = require('socket.io').listen(app);
 io.sockets.on('connection', 
   function(socket) 
   {
+    //On receiving a play request
     socket.on('playReq', function(data) 
     {
       if (players === 2)
@@ -64,11 +65,20 @@ io.sockets.on('connection',
         debug("Play request received when only one player exists");
       }
     });
+    
+    //On receiving a DEBUG request
+    socket.on('DEBUG', function(data) 
+    {      
+      debug(data['message']);
+    });
+    
   }
 );
 
 
+//Boardcast a debug message
 function debug(m)
 {
-  io.sockets.emit("DEBUG",{ message: m});
+  var escaped_message = sanitize.escape(data["m"]);
+  io.sockets.emit("DEBUG",{ message: escaped_message });
 }
