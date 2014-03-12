@@ -61,8 +61,14 @@ io.sockets.on('connection',
       }
       else
       {
-      
+        debug("Play request received when only one player exists");
       }
     });
   }
 );
+
+
+function debug(m)
+{
+  io.sockets.emit("DEBUG",{ message: m});
+}

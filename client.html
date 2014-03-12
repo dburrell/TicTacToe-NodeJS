@@ -14,19 +14,30 @@
       <script src="socket.io/socket.io.js"></script>
       <script type="text/javascript">
       
+        var debug = true;
         var side = "";    //X or O later
         var boxes = new Array();
         var player = '[PLAYER]';                
         var socketio = io.connect("192.168.0.202:1337");
         var yourTurn = [YOURTURN];
+        var gameOver = false;
         
-        
+        //Player 2 joined
         socketio.on("player2joined", function(data) 
         {
           document.getElementById("waitingMsg").style.display="none";
         });
         
-        //On receive data
+        //Debug
+        socketio.on("DEBUG", function(data) 
+        {
+          if (debug)
+          {
+            alert("DEBUG MESSAGE: " + data['message']);
+          }
+        });
+        
+        //Receiving a play
         socketio.on("play", function(data) 
         {
           try
@@ -40,15 +51,44 @@
           catch(err)
           {}
                       
-          displayArray();
-          yourTurn = toggle(yourTurn);            
+          displayArray();               // display new game board
+          yourTurn = toggle(yourTurn);  // change turn side            
+          checkGameStatus()             // check if game is over
+          
         });
 
-      
+        // The actual game logic
+        function checkGameStatus()
+        {
+          //In this case, it only really needs to check if game has finished
+          players = new Array();
+          players[0] = "X";
+          players[1] = "0";
+          for (var i = 0; i < 2 && gameOver === false; i++)
+          {
+            var p = players[i];
+            if (boxes[0] === p && boxes[1] === p && boxes[2] === p ){gameOver = true;}
+            if (boxes[3] === p && boxes[4] === p && boxes[5] === p) {gameOver = true;}
+            if (boxes[6] === p && boxes[7] === p && boxes[8] === p) {gameOver = true;}
+            
+            if (boxes[0] === p && boxes[3] === p && boxes[6] === p) {gameOver = true;}
+            if (boxes[1] === p && boxes[4] === p && boxes[7] === p) {gameOver = true;}
+            if (boxes[2] === p && boxes[5] === p && boxes[8] === p) {gameOver = true;}
+            
+            if (boxes[0] === p && boxes[4] === p && boxes[8] === p) {gameOver = true;}
+            if (boxes[2] === p && boxes[6] === p && boxes[6] === p) {gameOver = true;}
+            
+            if (gameOver)
+            {
+              alert("Game over! Player " + players[i] + " won!");
+            }
+          }
+        }
+        
       
         //Send out data
-        function sendMessage(cat, m) 
-        { socketio.emit(cat, { message : m, player: player}); }
+        function sendMessage(category, m) 
+        { socketio.emit(category, { message : m, player: player}); }
         
 
         
