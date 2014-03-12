@@ -1,13 +1,33 @@
 <!DOCTYPE html>
 <html>
   <style>
+    body, html
+    {
+      height:100%;
+      background: #499FCD;
+      background: -webkit-radial-gradient(center, ellipse cover, #499FCD 0%, #1A69AA 100%);
+      margin: 0;
+      text-align:center;
+      color:white;
+    }
     td
     {
       width:100px;
       height:100px;
       text-align:center;
-      background-color:yellow;
-      border: black 1px solid;
+      background-color:white;
+      border: black 2px solid;
+      color:black;
+      font-size:30px;
+      font-family:arial;      
+      background: #FDE;
+      background: -webkit-radial-gradient(center, ellipse cover, #FFF 0%, #FFF 100%);
+    }
+    table
+    {
+      position:absolute;
+      left:50%;
+      margin-left:-160px;
     }
   </style>
   <head>
@@ -18,7 +38,7 @@
         var side = "";    //X or O later
         var boxes = new Array();
         var player = '[PLAYER]';                
-        var socketio = io.connect("192.168.0.202:1337");
+        var socketio = io.connect("[IP]");
         var yourTurn = [YOURTURN];
         var gameOver = false;
         
@@ -63,7 +83,7 @@
           //In this case, it only really needs to check if game has finished
           players = new Array();
           players[0] = "X";
-          players[1] = "0";
+          players[1] = "O";
           for (var i = 0; i < 2 && gameOver === false; i++)
           {
             var p = players[i];
@@ -115,8 +135,10 @@
       </script>
   </head>
   <body>
+  <br>
     <div id="playerID"></div>
     <div id="waitingMsg" style="display:[SHOW_WAITING];">Waiting for player 2...</div>
+    <br>
     <table>
       <tr>
         <td id="box0"></td>
@@ -134,6 +156,8 @@
         <td id="box8"></td>
       </tr>  
     </table>    
+    
+    
   <script>
     //Add actions to boxes
     for (var i = 0; i < 9; i++)

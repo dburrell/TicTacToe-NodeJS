@@ -5,6 +5,7 @@ var http = require('http'),
 var gameCounter = 0;
 var players = 0;
 var playerJoined = false;
+var IP = "192.168.0.202:1337";
 
 var app = http.createServer(function (request, response) 
 {    
@@ -14,6 +15,7 @@ var app = http.createServer(function (request, response)
     {
       response.writeHead(200, {'Content-Type': 'text/html'});
                
+      data = data.replace("[IP]",IP);        
       if (players == 0)
       { 
         data = data.replace("[PLAYER]","X"); 
@@ -79,6 +81,6 @@ io.sockets.on('connection',
 //Boardcast a debug message
 function debug(m)
 {
-  var escaped_message = sanitize.escape(data["m"]);
+  var escaped_message = sanitize.escape(m);
   io.sockets.emit("DEBUG",{ message: escaped_message });
 }
